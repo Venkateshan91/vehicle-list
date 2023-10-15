@@ -8,7 +8,7 @@ function FavoriteButton({ isFavorited, onToggleFavorite }) {
         isFavorited ? 'bg-blue-500' : 'bg-gray-300'
       } text-white px-2 py-1 rounded`}
     >
-      {isFavorited ? 'Add to Favorite' : 'Favorited'}
+      {isFavorited ? 'Add to Favorites' : 'Remove from Favorites'}
     </button>
   );
 }

@@ -21,6 +21,7 @@
     margin: 0;
     padding: 0.5rem;
     border-bottom: 1px solid #d1cccc;
+    border-right: 1px solid #d1cccc;
     text-align: center;
   }
   
@@ -58,6 +59,22 @@
     width: 90px;
     margin: 0 auto !important;
 }
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.page-controller {
+  width: 20px;
+  height: 17px;
+  display: flex;
+}
+
+select {
+  border: 1px solid #d1cccc;
+  border-radius: 0.2rem;
+}
 .rounded-pill {
   align-items: center;
 	font-family: "Open Sans", Arial, Verdana, sans-serif;
@@ -85,22 +102,32 @@
     height: 10px;
     left: 6px;
     margin-top: -5px;
-    position: absolute;
+    position: absolute !important;
     top: 50%;
     width: 10px;
   }
-  
  
 }
 .rounded-pill--success {
-  background: #b4eda0; }
+  background: #b4eda0 !important; }
   .rounded-pill--success:before {
-    background: #6BC167; }
+    background: #6BC167 !important; }
 .rounded-pill--warning {
-  background: #ffebb6; }
+  background: #ffebb6 !important; }
   .rounded-pill--warning:before {
-    background: #ffc400; }
+    background: #ffc400 !important; }
 .rounded-pill--danger {
-  background: #ffd5d1; }
+  background: #ffd5d1 !important; }
   .rounded-pill--danger:before {
-    background: #ff4436; }
+    background: #ff4436 !important; }
+    .option-blocked {
+      color: #ff0000 !important;
+    }
+    
+    .option-approved {
+      color: #00ff00 !important;
+    }
+    
+    .option-rejected {
+      color: #0000ff !important;
+    }

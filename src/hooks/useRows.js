@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-// import img from 'http://localhost:3000/assets/images/a4-exterior.webp'
 
 export default function useRows() {
   const rows = useMemo(

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useTable, useFilters, useSortBy, useGlobalFilter, useAsyncDebounce, usePagination } from "react-table";
-import useRows from "../hooks/useRows";
-import useColumns from "../hooks/useColumns";
+import React,{useState} from "react";
+import { useTable, useFilters, useSortBy, useGlobalFilter, useAsyncDebounce, usePagination, useRow } from "react-table";
 import 'tailwindcss/tailwind.css';
 import "../assets/css/styles.css";
 import Modal from '../components/modal';
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
+import { BiSolidHeart, BiHeart } from "react-icons/bi";
+
 
 function CarsFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
     const totalCarsAvailable = preGlobalFilteredRows.length;
@@ -21,7 +21,6 @@ function CarsFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
         setValue(e.target.value);
         onFilterChange(e.target.value);
     };
-
     return (
         <span className="cars-filter">
             <input
@@ -35,20 +34,52 @@ function CarsFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
     );
 }
 
-function FavoriteButton({ isFavorited, onToggleFavorite }) {
-
+export function SelectColumnFilter({
+    column: { filterValue, setFilter, preFilteredRows, id },
+  }) {
+  
+    const options = React.useMemo(() => {
+      const options = new Set();
+      preFilteredRows.forEach((row) => {
+        options.add(row.values[id]);
+      });
+      return [...options.values()];
+    }, [id, preFilteredRows]);
+  
+  
     return (
-        <button
-            onClick={onToggleFavorite}
-            className={`${isFavorited ? 'bg-gray-500' : 'bg-blue-300'
-                } text-white px-2 py-1 rounded`}
-        >
-            {isFavorited ? 'Add to Favorite' : 'Favorited'}
-        </button>
+      <select
+        name={id}
+        id={id}
+        value={filterValue}
+        onChange={(e) => {
+          setFilter(e.target.value);
+        }}
+      >
+        <option value="">All</option>
+        {options.map((option, i) => (
+  
+          <option key={i} value={option} className={getOptionColorClass(option)}>
+            {option}
+          </option>
+        ))}
+      </select>
     );
-}
-
-export function SortIcon({ className }) {
+  }
+  
+  const getOptionColorClass = (option) => {
+    switch (option) {
+      case 'Blocked':
+        return 'rounded-pill rounded-pill--warning';
+      case 'Sold':
+        return 'rounded-pill rounded-pill--danger';
+      case 'Available':
+        return 'rounded-pill rounded-pill--success';
+      default:
+        return '';
+    }
+  };
+  export function SortIcon({ className }) {
     return (
         <svg className={className} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 320 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"></path></svg>
     )
@@ -64,55 +95,136 @@ export function SortDownIcon({ className }) {
     )
 }
 
-export default function DataTable({ data = [], isFavorite, onAction }) {
-    // const { favorites } = useRows;
+function DataTable({ data, handleFav }) {
+    const [isEdit, setIsEdit] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
-    const columns = useColumns();
-    console.log("data",data);
-    // const data = useRows();
-    const table = useTable({
-        columns, data, initialState: {
-            pageSize: 5,
-            pageIndex: 0
-        }, FavoriteButton
-    }, useFilters, useGlobalFilter, useSortBy, usePagination);
+  const columns = React.useMemo(
+    () => [
+        {
+            Header: "Image",
+            accessor: "image",
+            Cell: ({ row }) => (
+              <div className="flex items-center">
+                <img
+                  src={row.original.image}
+                  alt={row.original.name}
+                  className="w-16 h-16 cursor-pointer"
+                />
+                <span className="ml-2">{row.original.name}</span>
+              </div>
+            ),
+          },
+          {
+            Header: "Make",
+            accessor: "make",
+            Filter: SelectColumnFilter,
+            filter: 'includes',
+          },
+          {
+            Header: "Model",
+            accessor: "model",
+            Filter: SelectColumnFilter,
+            filter: 'includes',
+          },
+          {
+            Header: "Price",
+            accessor: "price",
+            Filter: SelectColumnFilter,
+            filter: 'includes',
+          },
+          {
+            Header: "Year",
+            accessor: "year",
+            Filter: SelectColumnFilter,
+            filter: 'includes',
+          },
+          {
+            Header: "Mileage",
+            accessor: "mileage",
+            Filter: SelectColumnFilter,
+            filter: 'includes',
+          },
+          {
+            Header: "Status",
+            accessor: "status",
+            Filter: SelectColumnFilter,
+            // filter: 'includes',
+            Cell: ({ cell: { value } }) => (
+              <span
+                className={`rounded-pill ${value === 'Blocked'
+                    ? 'rounded-pill--warning'
+                    : value === 'Sold'
+                      ? 'rounded-pill--danger'
+                      : 'rounded-pill--success'
+                  }`}
+              >
+                {value}
+              </span>
+            ),
+          },
+          {
+            Header: 'Actions',
+            accessor: 'isFavorite',
+            Cell: ({ row }) => (
+                <>
+              <button onClick={() => handleFav(row.original.id)} className={`rounded ${row.original.isFavorite ? "opacity-50 cursor-not-allowed ": " "}`}>
+                {row.original.isFavorite ? <BiHeart style={{color:"red", fontSize:"28px"}}/> : <BiSolidHeart  style={{color:"red", fontSize:"28px"}}/>}
+              </button>
+              <button className="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:focus:ring-yellow-900" onClick={handleEdit(row)}>Edit</button>
+              <button className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={hadleDelete(row)}>Delete</button>
+              </>
+            )
+            
+          }
+    ],
+    []
+  );
+  const handleEdit = (row) => {
+    setIsEdit(!isEdit);
+  };
 
+  const hadleDelete =(row) =>{
 
-    const openModal = (rowData) => {
-        setSelectedRowData(rowData);
-        setIsModalOpen(true);
-    };
+  }
 
-    const closeModal = () => {
-        setSelectedRowData(null);
-        setIsModalOpen(false);
-    };
+  const openModal = (rowData) => {
+    setSelectedRowData(rowData);
+    setIsModalOpen(true);
+};
 
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-        page,
-        canPreviousPage,
-        canNextPage,
-        pageOptions,
-        pageCount,
-        gotoPage,
-        nextPage,
-        previousPage,
-        setPageSize,
-        preGlobalFilteredRows,
-        setGlobalFilter,
-        state: { globalFilter, pageIndex, pageSize }
-    } = table;
+const closeModal = () => {
+    setSelectedRowData(null);
+    setIsModalOpen(false);
+};
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    preGlobalFilteredRows,
+    setGlobalFilter,
+    state: { globalFilter, pageIndex, pageSize }
+  } = useTable({
+    columns,
+    data,initialState: {
+        pageSize: 5,
+        pageIndex: 0
+    },
+  }, useFilters, useGlobalFilter, useSortBy, usePagination);
 
-
-    return (
-        <div className="w-full p-2 text-center">
-            <div className="sm:flex sm:gap-x-2 p-2">
+  return (
+    <div className="w-full p-2 text-center">
+        <div className="sm:flex sm:gap-x-2 p-2">
                 <CarsFilter
                     preGlobalFilteredRows={preGlobalFilteredRows}
                     globalFilter={globalFilter}
@@ -132,74 +244,62 @@ export default function DataTable({ data = [], isFavorite, onAction }) {
                     )
                 )}
             </div>
-            <table {...getTableProps()} className="w-full">
-                <thead>
-                    {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map((column) => (
-                                <th
-                                    scope="col"
-                                    className="group px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        {column.render('Header')}
-                                        <span>
-                                            {column.isSorted
-                                                ? column.isSortedDesc
-                                                    ? <SortDownIcon className="w-4 h-4 text-gray-400" />
-                                                    : <SortUpIcon className="w-4 h-4 text-gray-400" />
-                                                : (
-                                                    <SortIcon className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />
-                                                )}
-                                        </span>
-                                    </div>
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-                    {
-                        page.map((row) => {
-                            prepareRow(row);
-                            return (
-                                
-                                <tr {...row.getRowProps()} key={row.id}>
-                                    {row.cells.map((cell) => {
-                                        return (
-                                            <td 
-                                                
-                                                {...cell.getCellProps()}
-                                                className={`px-4 py-2 border-b border-gray-200 text-left ${cell.column.id === 'status' ? 'status-cell' : ''
-                                                    }`}
-                                            >
-                                                {cell.column.id === "image" ? (
-                                                    <img src={cell.value} alt="Vehicle" className="w-32 cursor-pointer flex justify-center mx-auto"
-                                                        onClick={() => openModal(row.original)}
-                                                    />):cell.column.id === "isFavorite" ? (
-                                                    <button onClick={() => onAction(row.original)}>
-                                                        {isFavorite
-                                                            ? "Remove from Favorites"
-                                                            : "Add to Favorites"}
-                                                    </button>
-                                                ) : (
-                                                    cell.render("Cell")
-                                                )}
-
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-
-                            );
-                        })
-                    }
-
-                </tbody>
-            </table>
-            <Modal isOpen={isModalOpen} data={selectedRowData} onClose={closeModal} />
-            <div className="pagination px-4">
+            <table {...getTableProps()}  className="w-full">
+      <thead>
+        {headerGroups.map((headerGroup) => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+          {headerGroup.headers.map((column) => (
+              <th
+                  scope="col"
+                  className="group px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
+              >
+                  <div className="flex items-left justify-between">
+                      {column.render('Header')}
+                      <span>
+                          {column.isSorted
+                              ? column.isSortedDesc
+                                  ? <SortDownIcon className="w-4 h-4 text-gray-400" />
+                                  : <SortUpIcon className="w-4 h-4 text-gray-400" />
+                              : (
+                                  <SortIcon className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />
+                              )}
+                      </span>
+                  </div>
+              </th>
+          ))}
+      </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {page.map((row) => {
+          prepareRow(row);
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map((cell) => {
+                console.log("i am cell ->", cell);
+                return (
+                    <td
+                    {...cell.getCellProps()}
+                    className={`px-4 py-2 border-b border-gray-200 text-left ${cell.column.id === 'status' ? 'status-cell' : ''
+                        }`}>
+                    {cell.column.id === "image" ? (
+                        <img src={cell.value} alt="Vehicle" className="w-32 cursor-pointer flex text-left mx-auto"
+                            onClick={() => openModal(row.original)}
+                        />) : (
+                        cell.render("Cell")
+                    )}
+                </td>
+                 
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+    <Modal isOpen={isModalOpen} data={selectedRowData} onClose={closeModal} />
+    <div className="pagination px-4">
 
                 <span>
                     Page&nbsp;
@@ -237,56 +337,9 @@ export default function DataTable({ data = [], isFavorite, onAction }) {
                     </button>{" "}
                 </div>
             </div>
-
-
-
-            {/* <div className="m-2 px-3">
-      <hr />
-      <h1 className="text-left mt-3">Favorite Items</h1>
-      <div>
-      <table {...getTableProps()} className="w-full">
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                scope="col"
-                className="group px-6 py-3 justify-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                {...column.getHeaderProps(column.getSortByToggleProps())}
-              >
-                <div className="flex items-left">
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? <SortDownIcon className="w-4 h-4 text-gray-400" />
-                        : <SortUpIcon className="w-4 h-4 text-gray-400" />
-                      : (
-                        <SortIcon className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />
-                      )}
-                  </span>
-                </div>
-              </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} key={row.id}>
-                {row.cells.map((cell) => {
-                  <div></div>
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      </div>
-
-      </div> */}
-        </div>
-    );
+    </div>
+    
+  );
 }
+
+export default DataTable;

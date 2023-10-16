@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import FavoriteButton from '../components/CustomCellRenderer';
 
 
 export function SelectColumnFilter({
@@ -48,7 +47,7 @@ const getOptionColorClass = (option) => {
   }
 };
 
-export default function useColumns() {
+export default function useColumns({handleFav}) {
 
   const columns = useMemo(
     () => [
@@ -117,16 +116,12 @@ export default function useColumns() {
       {
         Header: 'Actions',
         accessor: 'isFavorite',
-        // Cell: ({ value, row }) => (
-        //   <FavoriteCell value={value} updateFavorite={() => updateFavorite(row.original.id)} />
-        // ),
-        // Cell: ({ row, isFavorite, onAction }) => {
-        //   return (
-        //     <button onClick={() => onAction(row.original)}>
-        //       {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-        //     </button>
-        //   );
-        // },
+        Cell: ({ row }) => (
+          <button onClick={() => handleFav(row.original.id)}>
+            {row.original.isFav ? "remove" : "add"}
+          </button>
+        )
+        
       },
       // {
       //   Header: "Action",

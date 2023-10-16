@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from "react";
 
-function AddNew({ isOpen, data, onClose, onSave, addVehicle, useRows }) {
-    const [addCar, setAddCar] = useState(useRows);
-    const [newCar, setNewCar] = useState({ make: "", model: "", year: "", mileage: "", price: "", images: "", status: "", isFavorite: "", })
+function AddNew({ isOpen, onClose,  onSave, item, editItem }) {
+    // const [addCar, setAddCar] = useState(useRows);
+    // const [newCar, setNewCar] = useState({ make: "", model: "", year: "", mileage: "", price: "", images: "", status: "", isFavorite: "" })
+    const [make, setMake] = useState(item ? item.make : "");
+  const [model, setModel] = useState(item ? item.model : "");
+  const [year, setYear] = useState(item ? item.year : "");
+  const [mileage, setMileage] = useState(item ? item.mileage : "");
+  const [price, setPrice] = useState(item ? item.price : "");
+  const [image, setImage] = useState(item ? item.image : "");
+  const [carStatus, setCarStatus] = useState(item ? item.status : "");
+  const [carIsFavorite, setCarIsFavorite] = useState(item ? item.isFavorite : "");
+
     if (!isOpen) return null;
+
+    const addNewCar = () => {
+        onSave({ make, model, year, mileage, price, image, status, isFavorite });
+        onClose();
+      };
 
     // useEffect(() => {
     //     const storedCar = JSON.parse(localStorage.getItem("addCar"));
@@ -16,18 +30,18 @@ function AddNew({ isOpen, data, onClose, onSave, addVehicle, useRows }) {
     //     localStorage.setItem("addCar", JSON.stringify(addCar));
     // }, [addCar]);
 
-    const addNewCar = () => {
-        // if (newCar.text.trim() !== "") {
-            setAddCar([
-                ...addCar,
-                {
-                    id: new Date().getTime(),
-                    ...newCar
-                }
-            ]);
-            setNewCar({ title: "", description: "", text: "", selectValue: "" });
-        // }
-    };
+    // const addNewCar = () => {
+    //     // if (text.trim() !== "") {
+    //         setAddCar([
+    //             ...addCar,
+    //             {
+    //                 id: new Date().getTime(),
+    //                 ...newCar
+    //             }
+    //         ]);
+    //         setNewCar({ make: "", model: "", year: "", mileage: "", price: "", images: "", status: "", isFavorite: "" });
+    //     // }
+    // };
 
 
     // const handleChange = (e) => {
@@ -54,44 +68,44 @@ function AddNew({ isOpen, data, onClose, onSave, addVehicle, useRows }) {
                                     <label className="block text-left text-gray-700 text-md font-bold mb-2" >
                                         Make
                                     </label>
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="make" type="text" value={newCar.make} onChange={(e) => { setNewCar({ ...newCar, make: e.target.value }) }} placeholder="Enter Make" />
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="make" type="text" value={make} onChange={(e) => { setMake(e.target.value) }} placeholder="Enter Make" />
                                 </div>
                                 <div className="mb-2">
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="model">
                                         Model
                                     </label>
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="model" type="text" value={newCar.model} onChange={(e) => { setNewCar({ ...newCar, model: e.target.value }) }} placeholder="Enter Model" />
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="model" type="text" value={model} onChange={(e) => { setModel(e.target.value ) }} placeholder="Enter Model" />
                                 </div>
                                 <div className="mb-2">
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="image">
                                         Image Url
                                     </label>
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image" type="text" value={newCar.image} onChange={(e) => { setNewCar({ ...newCar, image: e.target.value }) }} placeholder="Enter Imageurl" />
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image" type="text" value={image} onChange={(e) => { setImage( e.target.value ) }} placeholder="Enter Imageurl" />
                                 </div>
                                 <div className="mb-2">
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="price">
                                         Price
                                     </label>
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price" type="text" value={newCar.price} onChange={(e) => { setNewCar({ ...newCar, price: e.target.value }) }} placeholder="Enter Price" />
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price" type="text" value={price} onChange={(e) => { setPrice(e.target.value ) }} placeholder="Enter Price" />
                                 </div>
                                 <div className="mb-2">
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="year">
                                         Year
                                     </label>
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="year" type="text" value={newCar.year} onChange={(e) => { setNewCar({ ...newCar, year: e.target.value }) }} placeholder="Enter Price" />
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="year" type="text" value={year} onChange={(e) => { setYear(e.target.value ) }} placeholder="Enter Price" />
                                 </div>
                                 <div className="mb-2">
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="mileage">
                                         Mileage
                                     </label>
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="mileage" type="text" value={newCar.mileage} onChange={(e) => { setNewCar({ ...newCar, mileage: e.target.value }) }} placeholder="Enter Mileage" />
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="mileage" type="text" value={mileage} onChange={(e) => { setMileage(e.target.value ) }} placeholder="Enter Mileage" />
                                 </div>
                                 <div className="mb-2">
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="status">
                                         Status
                                     </label>
-                                    <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" value={newCar.status} onChange={(e) =>
-                                        setNewCar({ ...newCar, status: e.target.value })
+                                    <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" value={carStatus} onChange={(e) =>
+                                        setCarStatus(e.target.value )
                                     }>
                                         <option value="">Select an option</option>
                                         {status.map((option) => (
@@ -105,8 +119,8 @@ function AddNew({ isOpen, data, onClose, onSave, addVehicle, useRows }) {
                                     <label className="block  text-left text-gray-700 text-md font-bold mb-2" for="isFavorite">
                                         isFavorite
                                     </label>
-                                    <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" value={newCar.isFavorite} onChange={(e) =>
-                                        setNewCar({ ...newCar, isFavorite: e.target.value })
+                                    <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" value={carIsFavorite} onChange={(e) =>
+                                        setCarIsFavorite(e.target.value)
                                     }>
                                         <option value="">Select an option</option>
                                         {isFavorite.map((option) => (
@@ -122,8 +136,8 @@ function AddNew({ isOpen, data, onClose, onSave, addVehicle, useRows }) {
                     </div>
                     <button
                         className="bg-green-500 text-white py-2 px-4 mt-4 rounded hover:bg-green-600" onClick={addNewCar}>
-                        {/* {data ? "Save" : "Update"} */}
-                        Save
+                        {item ? "Update" : "Save"}
+                        
                     </button>
                     <button
                         onClick={onClose}

@@ -19,7 +19,6 @@ function App() {
 
   useEffect(() => {
     const storedCarList = JSON.parse(localStorage.getItem('carsArr'));
-    console.log("storedCarList",storedCarList)
     const carsArr = [
       {
         id: 1,
@@ -194,24 +193,11 @@ function App() {
 
   const filterFavList = (list)=> {
     const favList = list.filter((e) => e.isFavorite)
-    console.log("fav list filter",favList)
     setFavCarsList(favList);
     localStorage.setItem('favCarsList', JSON.stringify(favList));
   }
 
-  // useEffect(() => {
-  //   setFavCarsList(carsList.filter((e) => e.isFavorite));
-  // }, [carsList]);
-  
-
-  // const Addnew = (item) => {
-  //   if (item?.id) {
-  //     setSelectedRowData(item)
-  //   }
-  //   setIsModalOpen(true);
-  // };
   const Addnew = (item) => {
-    console.log("car LIse",carsList,"id",item)
     if(item?.id){      
       setSelectedRowData(item)
     }
@@ -223,47 +209,25 @@ function App() {
     setIsModalOpen(false);
   };
 
-  // const addItem = (item) => {
-  //   setCarsList([...carsList, item]);
-  // };
   const addItem = (item) => {
-    console.log("add item", item,carsList)
     const updatedList = [...carsList, item];
     setCarsList(updatedList);
     localStorage.setItem('carsArr', JSON.stringify(updatedList));
     filterFavList(updatedList);
   };
 
-  // const editItem = (item) => {
-  //   const updatedNewData = carsList.map((d) =>
-  //     d.id === item.id
-  //       ? { ...d, make: item.make, model: item.model, year: item.year, mileage: item.mileage, price: item.price, image: item.image, status: item.status, isFavorite: item.isFavorite, }
-  //       : d
-  //   );
-  //   setCarsList(updatedNewData)
-  //   setFavCarsList(updatedNewData.filter((e) => e.isFavorite));
-  // };
   const editItem = (item) => {
-    console.log("item",item)
     const updatedNewData = carsList.map((d) =>
       d.id === item.id
         ? { ...d, make: item.make, model: item.model, year: item.year, mileage: item.mileage, price: item.price, image: item.image, status: item.status, isFavorite: item.isFavorite, }
         : d
     );
-    console.log("updated a",updatedNewData)
-    // setUpdateData(updatedNewData);
     setCarsList(updatedNewData)
     localStorage.setItem('carsArr', JSON.stringify(updatedNewData));
     filterFavList(updatedNewData);
-    // make, model, year, mileage, price, image, status, isFavorite
   };
 
-  // const deleteItem = (id) => {
-  //   setCarsList((items) => {
-  //     return items.filter((d) => d.id !== id)
-  //   }
-  //   );
-  // };
+
   const deleteItem = (id) => {
     setCarsList((items) =>{
       const updatedList = items.filter((d) => d.id !== id)
@@ -274,14 +238,6 @@ function App() {
     );
   };
 
-  // const handleFav = (id) => {
-  //   setCarsList((items) => {
-  //     return items.map((e, i) => {
-  //       return e.id === id ? { ...e, isFavorite: !e.isFavorite } : e;
-  //     })
-  //   }
-  //   );
-  // };
   const handleFav = (id) => {
     setCarsList((items) =>{
       const updatedList = items.map((e, i) => {

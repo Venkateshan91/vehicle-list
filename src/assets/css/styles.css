@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     font-family: "Calibri";
+    font-size: 13px;
     justify-content: center;
     padding: 1rem;
   }
@@ -19,10 +20,11 @@
   th,
   td {
     margin: 0;
-    padding: 0.5rem;
+    padding: 2px;
     border-bottom: 1px solid #d1cccc;
-    border-right: 1px solid #d1cccc;
+    /* border-right: 1px solid #d1cccc; */
     text-align: center;
+    font-size: 14px;
   }
   
   th:last-child,
@@ -134,4 +136,24 @@ span.addButtonSpan {
     
     .option-rejected {
       color: #0000ff !important;
+    }
+    .statusSelect {
+      background-color: #fff !important; /* Default background color for select box */
+    }
+    
+    .statusSelect option {
+      /* Style for options when no option is selected */
+      background-color: #fff !important;
+    }
+    
+    .statusSelect option[value="Blocked"] {
+      background-color: #ffebb6 !important; /* Background color for Option 1 when selected */
+    }
+    
+    .statusSelect option[value="Available"] {
+      background-color: #b4eda0  !important; /* Background color for Option 2 when selected */
+    }
+    
+    .statusSelect option[value="Sold"] {
+      background-color: #ffd5d1 !important; /* Background color for Option 3 when selected */
     }

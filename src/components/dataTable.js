@@ -1,11 +1,11 @@
-import React,{useState} from "react";
+import React,{useState, useEffect} from "react";
 import { useTable, useFilters, useSortBy, useGlobalFilter, useAsyncDebounce, usePagination, useRow } from "react-table";
 import 'tailwindcss/tailwind.css';
 import "../assets/css/styles.css";
 import Modal from '../components/modal';
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
-import { BiSolidHeart, BiHeart } from "react-icons/bi";
+import { BiSolidHeart, BiHeart, BiEditAlt, BiSolidTrash} from "react-icons/bi";
 
 
 function CarsFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
@@ -51,6 +51,7 @@ export function SelectColumnFilter({
       <select
         name={id}
         id={id}
+        className="statusSelect"
         value={filterValue}
         onChange={(e) => {
           setFilter(e.target.value);
@@ -58,7 +59,6 @@ export function SelectColumnFilter({
       >
         <option value="">All</option>
         {options.map((option, i) => (
-  
           <option key={i} value={option} className={getOptionColorClass(option)}>
             {option}
           </option>
@@ -95,7 +95,7 @@ export function SortDownIcon({ className }) {
     )
 }
 
-function DataTable({ data, handleFav }) {
+function DataTable({ data, handleFav,deleteItem,Addnew }) {
     const [isEdit, setIsEdit] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
@@ -124,7 +124,7 @@ function DataTable({ data, handleFav }) {
           {
             Header: "Model",
             accessor: "model",
-            Filter: SelectColumnFilter,
+            // Filter: SelectColumnFilter,
             filter: 'includes',
           },
           {
@@ -142,7 +142,7 @@ function DataTable({ data, handleFav }) {
           {
             Header: "Mileage",
             accessor: "mileage",
-            Filter: SelectColumnFilter,
+            // Filter: SelectColumnFilter,
             filter: 'includes',
           },
           {
@@ -169,10 +169,10 @@ function DataTable({ data, handleFav }) {
             Cell: ({ row }) => (
                 <>
               <button onClick={() => handleFav(row.original.id)} className={`rounded ${row.original.isFavorite ? "opacity-50 cursor-not-allowed ": " "}`}>
-                {row.original.isFavorite ? <BiHeart style={{color:"red", fontSize:"28px"}}/> : <BiSolidHeart  style={{color:"red", fontSize:"28px"}}/>}
+                {row.original.isFavorite ? <BiHeart title="Remove from Favorite" style={{color:"#be123c", fontSize:"22px"}}/> : <BiSolidHeart title="Add to Favorite" style={{color:"#be123c", fontSize:"22px"}}/>}
               </button>
-              <button className="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:focus:ring-yellow-900" onClick={handleEdit(row)}>Edit</button>
-              <button className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onClick={hadleDelete(row)}>Delete</button>
+              <button title="Edit" className="ms-4" onClick={() => Addnew(row.original)}><BiEditAlt style={{color:"#0284c7", fontSize:"22px"}}/></button>
+              <button title="Delete" className="ms-4" onClick={() => deleteItem(row.original.id)}><BiSolidTrash  style={{color:"red", fontSize:"22px"}}/></button>
               </>
             )
             
@@ -184,9 +184,7 @@ function DataTable({ data, handleFav }) {
     setIsEdit(!isEdit);
   };
 
-  const hadleDelete =(row) =>{
-
-  }
+  
 
   const openModal = (rowData) => {
     setSelectedRowData(rowData);
@@ -222,6 +220,7 @@ const closeModal = () => {
     },
   }, useFilters, useGlobalFilter, useSortBy, usePagination);
 
+  
   return (
     <div className="w-full p-2 text-center">
         <div className="sm:flex sm:gap-x-2 p-2">
@@ -251,7 +250,7 @@ const closeModal = () => {
           {headerGroup.headers.map((column) => (
               <th
                   scope="col"
-                  className="group px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="group px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   {...column.getHeaderProps(column.getSortByToggleProps())}
               >
                   <div className="flex items-left justify-between">
@@ -277,14 +276,13 @@ const closeModal = () => {
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                console.log("i am cell ->", cell);
                 return (
                     <td
                     {...cell.getCellProps()}
-                    className={`px-4 py-2 border-b border-gray-200 text-left ${cell.column.id === 'status' ? 'status-cell' : ''
+                    className={`px-2 py-1 border-b border-gray-200 text-left ${cell.column.id === 'status' ? 'status-cell' : ''
                         }`}>
                     {cell.column.id === "image" ? (
-                        <img src={cell.value} alt="Vehicle" className="w-32 cursor-pointer flex text-left mx-auto"
+                        <img src={cell.value} alt="Vehicle" className="w-28 cursor-pointer flex text-left mx-auto"
                             onClick={() => openModal(row.original)}
                         />) : (
                         cell.render("Cell")
